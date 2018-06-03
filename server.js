@@ -54,6 +54,20 @@ Userschema.methods.generateAuthToken = function(){
           console.log('Inable to save');
       })
 }
+Userschema.statics.findByToken = function(token){
+     var login = this;
+    var decoded;
+    try{
+      decoded = jwt.verify(token ,'abcd789')
+    }catch(e){
+      res.status(401);
+    }
+    return login.findOne({
+        "_id":decoded._id,
+        "tokens.token":token,
+        "tokens.access":"auth"
+    })
+}
 var login = mongoose.model('login',Userschema);
 module.exports={
     login

@@ -5,6 +5,7 @@ const express = require('express');
 const app  = express();
 const _ = require('lodash');
 const bodyParser = require('body-parser');
+const {authenticate} = require('./authenticate.js')
 app.use(bodyParser.json());
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://bindu:admin@ds133630.mlab.com:33630/user');
@@ -23,6 +24,10 @@ app.post('/user',(req,res)=>{
         console.log('token was nt passed',e)
     })
     })
+
+app.get('/user/me',authenticate,(req,res)=>{
+   res.send(req.user);
+})
 app.listen(3000,()=>[
     console.log('connected')
 ]);
