@@ -2,7 +2,7 @@ const mongodb = require('mongodb');
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-//var {mongoose} = require('./usermodel');
+const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
@@ -68,10 +68,24 @@ Userschema.statics.findByToken = function(token){
         "tokens.access":"auth"
     })
 }
+Userschema.pre('save',function(next){
+    var user = this;
+if(user.isModified('password')){
+ bcrypt.genSalt(10,(err,salt)=>{
+     bcrypt.hash(user.password,salt,(err,hash)=>{
+        user.password = hash;
+        next();
+     })
+ })
+}else{
+next();
+}
+})
 var login = mongoose.model('login',Userschema);
 module.exports={
     login
 }
+
 
 /*app.post('/user',(req,res)=>{
     var body =_.pick(req.body,['email','password']);
